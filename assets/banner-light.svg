@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="300" viewBox="0 0 1280 300" role="img" aria-label="Jev Sign Up Watcher — waits for the door to open, then walks through it">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="55%" stop-color="#f6f8fa"/>
+      <stop offset="100%" stop-color="#eef3f7"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1a7f37"/>
+      <stop offset="100%" stop-color="#2da44e"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#2da44e" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#2da44e" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="hair" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#2da44e" stop-opacity="0"/>
+      <stop offset="18%" stop-color="#2da44e" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#2da44e" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1280" height="300" fill="url(#bg)"/>
+  <rect width="1280" height="300" fill="none" stroke="#d0d7de" stroke-width="2"/>
+
+  <!-- soft glow behind the successful attempt -->
+  <circle cx="1105" cy="150" r="120" fill="url(#glow)"/>
+
+  <!-- title -->
+  <text x="80" y="128" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        font-size="62" font-weight="700" fill="#1f2328" letter-spacing="-1.5">Jev Sign Up Watcher</text>
+
+  <!-- accent underline -->
+  <rect x="82" y="150" width="132" height="4" rx="2" fill="url(#accent)"/>
+
+  <!-- tagline -->
+  <text x="80" y="196" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        font-size="25" font-weight="400" fill="#59636e">Retries a closed signup every hour, then tells you it got in.</text>
+
+  <!-- meta line -->
+  <text x="80" y="242" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace"
+        font-size="16" fill="#818b98">node &#8805;18&#160;&#160;&#183;&#160;&#160;pm2&#160;&#160;&#183;&#160;&#160;requires browser-skill&#160;&#160;&#183;&#160;&#160;MIT</text>
+
+  <!-- ── retry timeline ─────────────────────────────── -->
+  <g transform="translate(830, 118)">
+    <text x="0" y="-26" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace"
+          font-size="13" fill="#818b98" letter-spacing="1.6">HOURLY ATTEMPTS</text>
+
+    <!-- hairline through the ticks -->
+    <rect x="0" y="15" width="300" height="1" fill="url(#hair)"/>
+
+    <!-- eleven refused attempts, fading up toward the hit -->
+    <g fill="#8c959f">
+      <rect x="0"   y="4" width="9" height="24" rx="4.5" opacity="0.30"/>
+      <rect x="22"  y="4" width="9" height="24" rx="4.5" opacity="0.36"/>
+      <rect x="44"  y="4" width="9" height="24" rx="4.5" opacity="0.42"/>
+      <rect x="66"  y="4" width="9" height="24" rx="4.5" opacity="0.48"/>
+      <rect x="88"  y="4" width="9" height="24" rx="4.5" opacity="0.54"/>
+      <rect x="110" y="4" width="9" height="24" rx="4.5" opacity="0.60"/>
+      <rect x="132" y="4" width="9" height="24" rx="4.5" opacity="0.66"/>
+      <rect x="154" y="4" width="9" height="24" rx="4.5" opacity="0.72"/>
+      <rect x="176" y="4" width="9" height="24" rx="4.5" opacity="0.78"/>
+      <rect x="198" y="4" width="9" height="24" rx="4.5" opacity="0.84"/>
+      <rect x="220" y="4" width="9" height="24" rx="4.5" opacity="0.92"/>
+    </g>
+
+    <!-- the attempt that lands -->
+    <rect x="242" y="-2" width="11" height="36" rx="5.5" fill="url(#accent)"/>
+
+    <!-- check mark -->
+    <g transform="translate(274, 8)">
+      <circle cx="9" cy="9" r="9" fill="none" stroke="#2da44e" stroke-width="1.6" opacity="0.55"/>
+      <path d="M5 9.4 L7.8 12.2 L13.2 5.8" fill="none" stroke="#1a7f37"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <!-- labels under the ticks -->
+    <text x="0" y="54" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace"
+          font-size="12.5" fill="#9aa4ae">full</text>
+    <text x="236" y="54" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace"
+          font-size="12.5" fill="#1a7f37">success</text>
+  </g>
+
+  <!-- status chip -->
+  <g transform="translate(830, 214)">
+    <rect x="0" y="0" width="300" height="34" rx="17" fill="#ffffff" stroke="#d0d7de" stroke-width="1"/>
+    <circle cx="20" cy="17" r="4.5" fill="#2da44e"/>
+    <text x="36" y="22" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace"
+          font-size="13.5" fill="#59636e">writes SUCCESS.txt, then stops</text>
+  </g>
+</svg>
