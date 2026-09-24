@@ -1,0 +1,5 @@
+.env
+SUCCESS.txt
+sid
+node_modules/
+*.log
