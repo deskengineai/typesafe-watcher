@@ -71,6 +71,19 @@ Set in `.env` (never committed — it's in `.gitignore`).
 | `GOOGLE_EMAIL` | yes | — | The Google account to sign up with. Must already be signed in to Chrome. |
 | `BSK_PATH` | no | `%USERPROFILE%\.local\bin\bsk.exe` | Path to the `bsk` CLI, if it isn't in the default location. |
 
+### How often it checks
+
+Hourly by default. The interval is a single constant at the top of `watcher.js`, so set it to
+whatever suits the window you are waiting on:
+
+```js
+const INTERVAL_MS = 60 * 60 * 1000;   // hourly, the default
+const INTERVAL_MS = 5 * 60 * 1000;    // every 5 minutes
+```
+
+Five minutes is 288 checks a day against one public signup form, using one account — still
+patient. Going far below that earns you rate limiting rather than a seat.
+
 ## How a check works
 
 Each attempt opens its own `bsk` session and always closes it, even when the attempt throws.
