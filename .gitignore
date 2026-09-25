@@ -3,3 +3,4 @@ SUCCESS.txt
 sid
 node_modules/
 *.log
+notify-state.json

@@ -5,7 +5,8 @@
   "main": "watcher.js",
   "scripts": {
     "start": "node watcher.js",
-    "pm2": "pm2 start ecosystem.config.js && pm2 save"
+    "pm2": "pm2 start ecosystem.config.js && pm2 save",
+    "test": "node --test test/lib.test.js"
   },
   "license": "MIT"
 }

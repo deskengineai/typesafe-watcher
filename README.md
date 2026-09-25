@@ -60,7 +60,7 @@ npm i -g pm2-windows-startup
 pm2-startup install
 ```
 
-Prefer to run it in the foreground? `npm start`.
+Prefer to run it in the foreground? `npm start`. Run the unit tests with `npm test`.
 
 ## Configuration
 
@@ -88,11 +88,15 @@ patient. Going far below that earns you rate limiting rather than a seat.
 
 Each attempt opens its own `bsk` session and always closes it, even when the attempt throws.
 
-1. Navigate to `console.typesafe.ai/login`.
+1. **Signups-paused form.** Open `typesafe.ai`. If it says signups are paused, enter
+   `GOOGLE_EMAIL` in the form and click **Notify me** / **Submit**. This happens at most
+   **twice, ever**, tracked in `notify-state.json` across restarts. After two
+   submissions the watcher skips this step and keeps checking.
+2. Navigate to `console.typesafe.ai/login`.
    If the URL no longer contains `/login`, a previous run already got in → **success**.
-2. Find **Continue with Google** by its visible text and click it.
+3. Find **Continue with Google** by its visible text and click it.
    Element references are resolved fresh from `bsk observe` every time, never hard-coded.
-3. Poll every 3 seconds, up to 20 times, handling whatever appears:
+4. Poll every 3 seconds, up to 20 times, handling whatever appears:
    - **Google's account chooser** → click the entry matching `GOOGLE_EMAIL`
    - **A consent screen** → click Continue or Allow
    - **Back on the console** → classify the result
@@ -102,6 +106,8 @@ Each attempt opens its own `bsk` session and always closes it, even when the att
 | Result | Detected by | What happens |
 |---|---|---|
 | `full` | `signups_disabled` in the URL, or "we're full" in the page text | Logged. Retries in 60 minutes. |
+| `paused` | "new signups are paused" on the console page | Submits the Notify me form (if under 2 submissions). Retries in 60 minutes. |
+| `site-error` | TypeSafe's "Sign-in hit an unexpected error" page, usually an HTTP 429 rate limit | Logged. Retries in 60 minutes. |
 | `success` | A `console.typesafe.ai` page that is **not** `/login` or `/auth/*`, seen twice in a row | Writes `SUCCESS.txt`, shows a desktop popup, stops checking. |
 | `unknown` | Ran out of polls without a clear answer | Logged with the final URL. Retries in 60 minutes. |
 | `error` | The attempt threw | Logged with the message. Retries in 60 minutes. |
@@ -131,12 +137,15 @@ already completed. Delete `SUCCESS.txt` to resume.
 | `"Continue with Google" button not found` | The login page changed, or it hadn't finished loading | Check the page manually; the button is matched on visible text |
 | Every attempt returns `error` | `bsk` isn't on the expected path, or the extension isn't connected | Run `bsk browsers` — it should list your Chrome. Set `BSK_PATH` if the binary lives elsewhere |
 | Result is always `unknown` | Google asked for something unhandled, such as 2FA or a password re-prompt | Complete the sign-in once by hand, then let the watcher resume |
+| Result is `site-error` | TypeSafe is rate limiting (HTTP 429), often after many checks close together | Wait. Don't shorten the interval |
 | Nothing happens after success | Working as intended — `SUCCESS.txt` exists | Delete `SUCCESS.txt` to start checking again |
 
 ## Project layout
 
 ```
-watcher.js            The whole watcher: env loading, bsk driving, the retry loop
+watcher.js            The watcher: env loading, bsk driving, the retry loop
+lib.js                Page parsing and the notify-me counter (no browser access)
+test/lib.test.js      Unit tests for lib.js (npm test)
 ecosystem.config.js   PM2 process definition
 .env.example          Template for .env
 PROMPT.md             The prompt that generated this project, for rebuilding it
@@ -148,8 +157,8 @@ PROMPT.md             The prompt that generated this project, for rebuilding it
   It is a patient poller, not a bulk registration tool.
 - Your email only ever reaches the browser and your local logs, and is redacted in the
   account-chooser log line.
-- `.env` and `SUCCESS.txt` are git-ignored, so neither your address nor your signup state
-  is ever committed.
+- `.env`, `SUCCESS.txt` and `notify-state.json` are git-ignored, so neither your address
+  nor your signup state is ever committed.
 
 ## License
 
