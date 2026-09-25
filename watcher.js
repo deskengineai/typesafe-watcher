@@ -46,6 +46,18 @@ async function attempt() {
   const run = (args, t) => bsk([...args, '--session', s], t);
   const url = () => run(['evaluate', 'location.href']).trim();
   const bodyText = () => run(['evaluate', 'document.body.innerText']);
+  // Pages keep re-rendering while they load, so `observe` can fail ("Document changed
+  // during observation") or run before the control exists. Re-observe until it shows up.
+  const waitForRef = async (pattern, tries = 10) => {
+    for (let i = 0; i < tries; i++) {
+      try {
+        const ref = findRef(run(['observe']), pattern);
+        if (ref) return ref;
+      } catch (e) { /* page still changing; observe again */ }
+      await sleep(2000);
+    }
+    return null;
+  };
 
   try {
     run(['navigate', LOGIN_URL]);
@@ -54,7 +66,7 @@ async function attempt() {
     // Already logged in from a previous run -> login page redirects into the console.
     if (!url().includes('/login')) return 'success';
 
-    const googleRef = findRef(run(['observe']), /Continue with Google/i);
+    const googleRef = await waitForRef(/Continue with Google/i);
     if (!googleRef) throw new Error('"Continue with Google" button not found');
     run(['click', googleRef]);
 
@@ -66,11 +78,12 @@ async function attempt() {
       await sleep(3000);
       const u = url();
       if (u.includes('accounts.google.com')) {
-        const obs = run(['observe']);
+        let obs;
+        try { obs = run(['observe']); } catch (e) { continue; } // page still changing
         const acct = findRef(obs, new RegExp(EMAIL.replace(/\./g, '\\.'), 'i'));
         const cont = findRef(obs, /^(Continue|Allow)$/i);
-        if (acct) { log('choosing Google account', EMAIL.replace(/^(.).*(@.*)$/, '$1***$2')); run(['click', acct]); }
-        else if (cont) { log('clicking Google consent:', cont); run(['click', cont]); }
+        if (acct) { log('choosing Google account', EMAIL.replace(/^(.).*(@.*)$/, '$1***$2')); try { run(['click', acct]); } catch (e) { /* stale ref; retry next poll */ } }
+        else if (cont) { log('clicking Google consent:', cont); try { run(['click', cont]); } catch (e) { /* stale ref; retry next poll */ } }
         continue;
       }
       if (u.includes('console.typesafe.ai')) {
